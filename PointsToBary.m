@@ -1,4 +1,4 @@
-function [] = PointsToBary( fnameMesh, fnamePoints, fnameWriteTo )
+function [m] = PointsToBary( fnameMesh, fnamePoints, fnameWriteTo )
 
 %% Read in a set of 3D points and produce
 %   Vertex 1 vertex 2 vertex 3  bary 1 bary 2 bary 3
@@ -31,8 +31,10 @@ plot3( pts(:,1), pts(:,2), pts(:,3), 'Xg', 'MarkerSize', 20);
 dists = zeros( size(pts,1), 1 );
 tris = ConvertToTriangles(m, ones( size(m.vertices, 1), 1) );
 
+fprintf('NVs %0.0f\n', size(m.vertices,1));
 dists = zeros( size(pts,1), 1 );
-fid = fopen( fnameWriteTo, 'w');
+fidIds = fopen( strcat( fnameWriteTo, '_ids.txt'), 'w');
+fidLocs = fopen( strcat( fnameWriteTo, '_pts_norms.txt'), 'w');
 for k = 1:size(pts,1)
     for indx = 1:size(tris,1)
         dists(indx) = ProjectPolygon( tris(indx,:), pts(k,1:3) );
@@ -43,13 +45,21 @@ for k = 1:size(pts,1)
     
     [ ~, ~, ~, ~, barys, ~, ~ ] = ProjectPolygon( tris(iBest,:), pts(k,1:3) ) ;
     
-    fprintf(fid, '%0.0f, %0.0f, %0.0f, %0.6f, %0.6f, %0.6f\n', m.faces(iBest,:), barys );
+    fprintf('%0.0f, %0.0f, %0.0f, %0.6f, %0.6f, %0.6f\n', m.faces(iBest,:), barys );
+    fprintf(fidIds, '%0.0f, %0.0f, %0.0f, %0.6f, %0.6f, %0.6f\n', m.faces(iBest,:), barys );
     
     ptReconstruct = m.vertices( m.faces(iBest,1),:) .* barys(1) + ...
                     m.vertices( m.faces(iBest,2),:) .* barys(2) + ...
                     m.vertices( m.faces(iBest,3),:) .* barys(3);
     plot3( ptReconstruct(1), ptReconstruct(2), ptReconstruct(3), 'Or', 'MarkerSize', 20);
+    
+    fprintf(fidLocs, '%0.6f, %0.6f, %0.6f,', ptReconstruct );
+    vecNorm = cross( m.vertices( m.faces(iBest,2),:) - m.vertices( m.faces(iBest,1),:), ...
+                     m.vertices( m.faces(iBest,3),:) - m.vertices( m.faces(iBest,1),:) );
+    vecNorm = vecNorm ./ sqrt( vecNorm(1)^2 + vecNorm(2)^2 + vecNorm(3)^2 );
+    fprintf(fidLocs, '%0.6f, %0.6f, %0.6f,', vecNorm );
 end
-fclose(fid);
+fclose(fidIds);
+fclose(fidLocs);
 
 end
