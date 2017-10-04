@@ -28,4 +28,11 @@ objPointsOriented = matRot * objPointsCenter;
 % Clip
 idsInPlane = abs( objPointsOriented(:,2) ) < height;
 
+plot3( objPoints(idsInPlane, 1), objPoints(idsInPlane, 2), objPoints(idsInPlane, 3), 'xr');
+pts = [ ptCenter - vecY * height; ptCenter + vecY * height ];
+plot3( pts(:,1), pts(:,2), pts(:,3), 'O-b');
+pts = [ ptCenter - vecX; ptCenter + vecX ];
+plot3( pts(:,1), pts(:,2), pts(:,3), 'O-g');
+pts = [ ptCenter; ptCenter + vecZ ];
+plot3( pts(:,1), pts(:,2), pts(:,3), 'O-r');
 end

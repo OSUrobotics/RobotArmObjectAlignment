@@ -1,4 +1,4 @@
-function [m] = PointsToBary( fnameMesh, fnamePoints, fnameWriteTo )
+function [m, idsOut, barysOut, normsOut] = PointsToBary( fnameMesh, fnamePoints, fnameWriteTo )
 
 %% Read in a set of 3D points and produce
 %   Vertex 1 vertex 2 vertex 3  bary 1 bary 2 bary 3
@@ -25,6 +25,10 @@ else
     pts = m.vertices(ps == 1, :);
     pts = mean(pts); % One point - average
 end
+
+idsOut = zeros( length( pts ), 3 ); 
+barysOut = zeros( length( pts ), 3 );
+normsOut = zeros( length( pts ), 3 );
 
 hold on;
 plot3( pts(:,1), pts(:,2), pts(:,3), 'Xg', 'MarkerSize', 20);
@@ -58,6 +62,10 @@ for k = 1:size(pts,1)
                      m.vertices( m.faces(iBest,3),:) - m.vertices( m.faces(iBest,1),:) );
     vecNorm = vecNorm ./ sqrt( vecNorm(1)^2 + vecNorm(2)^2 + vecNorm(3)^2 );
     fprintf(fidLocs, '%0.6f, %0.6f, %0.6f,', vecNorm );
+    
+    idsOut(k,:) = m.faces(iBest,:);
+    barysOut(k,:) = barys;
+    normsOut(k,:) = vecNorm;
 end
 fclose(fidIds);
 fclose(fidLocs);
