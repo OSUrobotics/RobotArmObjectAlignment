@@ -6,15 +6,19 @@ function [m, idsOut, barysOut, normsOut] = PointsToBary( fnameMesh, fnamePoints,
 
 
 if strcmp( upper( fnameMesh(end-3:end) ), '.STL' ) 
-    m = stlread( fnameMesh );
+    mClick = stlread( fnameMesh );
 elseif strcmp( upper( fnameMesh(end-3:end) ), '.PLY' ) 
-    m = read_ply( fnameMesh );
+    mClick = struct;
+    [mClick.vertices, mClick.faces] = read_ply( fnameMesh );
 else
     fprintf('File type %s not found\n', fnameMesh);
-    m = [];
+    mClick = [];
 end
 
-RenderSTL( m, 1, false, [0.5 0.5 0.5] );
+m = stlread( strcat(fnameMesh(1:end-4), '.STL') );
+%RenderSTL( m, 1, false, [0.5 0.5 0.5] );
+%hold on
+RenderSTL( mClick, 1, false, [0.5 0.5 0.5] );
 
 ps = dlmread( fnamePoints );
 pts = [];
@@ -22,7 +26,11 @@ pts = [];
 if size(ps,2) == 3
     pts = ps;
 else
-    pts = m.vertices(ps == 1, :);
+    pts = mClick.vertices(ps == 1, :);
+    hold on;
+    plot3( pts(:,1), pts(:,2), pts(:,3), 'Or', 'MarkerSize', 20);
+    vIds = 1:length(ps);
+    disp( vIds( ps == 1 ) );
     pts = mean(pts); % One point - average
 end
 
@@ -52,10 +60,12 @@ for k = 1:size(pts,1)
     fprintf('%0.0f, %0.0f, %0.0f, %0.6f, %0.6f, %0.6f\n', m.faces(iBest,:), barys );
     fprintf(fidIds, '%0.0f, %0.0f, %0.0f, %0.6f, %0.6f, %0.6f\n', m.faces(iBest,:), barys );
     
-    ptReconstruct = m.vertices( m.faces(iBest,1),:) .* barys(1) + ...
-                    m.vertices( m.faces(iBest,2),:) .* barys(2) + ...
-                    m.vertices( m.faces(iBest,3),:) .* barys(3);
+    ptReconstruct = Reconstruct( m, m.faces(iBest,:), barys );
+                    %m.vertices( m.faces(iBest,1),:) .* barys(1) + ...
+                    %m.vertices( m.faces(iBest,2),:) .* barys(2) + ...
+                    %m.vertices( m.faces(iBest,3),:) .* barys(3);
     plot3( ptReconstruct(1), ptReconstruct(2), ptReconstruct(3), 'Or', 'MarkerSize', 20);
+    fprintf('Pt - ptReconstruct %0.6f %0.6f %0.6f\n', pts(k,1:3) - ptReconstruct );
     
     fprintf(fidLocs, '%0.6f, %0.6f, %0.6f,', ptReconstruct );
     vecNorm = cross( m.vertices( m.faces(iBest,2),:) - m.vertices( m.faces(iBest,1),:), ...

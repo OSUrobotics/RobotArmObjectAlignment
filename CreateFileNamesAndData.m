@@ -1,4 +1,4 @@
-function [ fileNames, fileData ] = CreateFileNamesAndData( dir, study, trial )
+function [ fileNames, fileData ] = CreateFileNamesAndData( dir, studyGen, studyCol, trial )
 %CreateFileNamesAndData Create a structure with all the needed file names,
 %  data
 %   INPUT:
@@ -9,9 +9,9 @@ fileNames = struct;
 fileData = struct;
 
 fileNames.dir = dir;
-fileNames.dirCollected = strcat( dir, 'Collected data/', study, '/' );
-fileNames.dirAnalyzed = strcat( dir, 'Analyzed data/', study, '/' );
-fileNames.dirGenerated = strcat( dir, 'Generated study data/', study, '/' );
+fileNames.dirCollected = strcat( dir, 'Collected data/', studyCol, '/' );
+fileNames.dirAnalyzed = strcat( dir, 'Analyzed data/', studyCol, '/' );
+fileNames.dirGenerated = strcat( dir, 'Generated study data/', studyGen, '/' );
 fileNames.dirMasks = strcat(fileNames.dirGenerated, 'Masks/');
 fileNames.dirObjectSTLS = strcat( fileNames.dirGenerated, 'ObjectSTLs/');
 fileNames.dirFrames = strcat( fileNames.dirCollected, trial, '/Frames/' );

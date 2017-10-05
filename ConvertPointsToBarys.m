@@ -2,7 +2,8 @@
 addpath('STLRead');
 
 dir = '/Users/grimmc/Dropbox/Unity/Meshes/';
-name = 'handOnly';
+name = 'handAndArm';
+%name = 'handOnly';
 handrep = struct;
 strConv = { 'palm', 'palm_left', 'palm_right', ...
             'thumb_inner', 'thumb_joint', ...
@@ -16,7 +17,7 @@ handrep.vIds = zeros( length( strConv ), 3 );
 handrep.vBarys = zeros( length( strConv ), 3 );
 handrep.vNorms = zeros( length( strConv ), 3 );
         
-strMesh = strcat(dir, name, '.stl');
+strMesh = strcat(dir, name, '.ply');
 for k = 1:size( strConv, 2)
     clf
     strBase = strcat(dir, name, '_', strConv{k});
@@ -26,8 +27,15 @@ for k = 1:size( strConv, 2)
     handrep.vNorms(k,:) = norms(1,:);    
 end
 
+RenderSTL( m, 1, false, [0.5 0.5 0.5] );
+hold on
+for k = 1:size( strConv, 2 )
+    pt = Reconstruct(m, handrep.vIds(k,:), handrep.vBarys(k,:) );
+    plot3( pt(1), pt(2), pt(3), 'Xr', 'MarkerSize', 20 );
+end
+
 %%Points on hand
-save( strcat( dir, 'handrep.mat'), 'handrep' );
+save( strcat( dir, 'handrep', name, '.mat'), 'handrep' );
 
 fid = fopen( strcat(dir, name, '_vs.txt'), 'w');
 for k = 1:size(m.vertices,1)

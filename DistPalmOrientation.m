@@ -8,9 +8,10 @@ function [ ptCenter, vecX, vecY ] = DistPalmOrientation( stlHand, handrep )
 [ptLeft, ~] = Reconstruct( stlHand, handrep.vIds(2,:), handrep.vBarys(2,:) );
 [ptRight, ~] = Reconstruct( stlHand, handrep.vIds(3,:), handrep.vBarys(3,:) );
 
-vecX = ptRight - ptLeft;
-vecX = vecX ./ sqrt( sum(vecX.^2) );
-vecY = palmNorm ./ sqrt( sum(vecNorm.^2) );
+vecY = ptRight - ptLeft;
+vecY = vecY ./ sqrt( sum(vecY.^2) );
+vecZ = palmNorm ./ sqrt( sum(palmNorm.^2) );
+vecX = cross( vecY, vecZ );
 
 end
 

@@ -15,15 +15,16 @@ function [idsInPlane, objPointsOriented ] = PlaneThroughHand( ptCenter, vecX, ve
 objPointsCenter = objPoints(:,1:3) - ptCenter;
 
 % Make the rotation matrix
-vecY = vecY ./ sqrt( vecY.*vecY );
+vecY = vecY ./ sqrt( sum(vecY.*vecY) );
 vecZ = cross( vecX, vecY );
-vecZ = vecZ ./ sqrt( vecZ .* vecZ );
+vecZ = vecZ ./ sqrt( sum(vecZ .* vecZ) );
 vecX = cross( vecY, vecZ );
-vecX = vecX ./ sqrt( vecX .* vecX );
+vecX = vecX ./ sqrt( sum(vecX .* vecX) );
 
 matRot = [ vecX; vecY; vecZ]';
 % Rotate
-objPointsOriented = matRot * objPointsCenter;
+objPointsOriented = matRot * objPointsCenter';
+objPointsOriented = objPointsOriented';
 
 % Clip
 idsInPlane = abs( objPointsOriented(:,2) ) < height;
