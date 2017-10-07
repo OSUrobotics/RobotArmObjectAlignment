@@ -64,7 +64,7 @@ for k = 1:size(pts,1)
                     %m.vertices( m.faces(iBest,1),:) .* barys(1) + ...
                     %m.vertices( m.faces(iBest,2),:) .* barys(2) + ...
                     %m.vertices( m.faces(iBest,3),:) .* barys(3);
-    plot3( ptReconstruct(1), ptReconstruct(2), ptReconstruct(3), 'Or', 'MarkerSize', 20);
+    plot3( ptReconstruct(1), ptReconstruct(2), ptReconstruct(3), 'Og', 'MarkerSize', 20);
     fprintf('Pt - ptReconstruct %0.6f %0.6f %0.6f\n', pts(k,1:3) - ptReconstruct );
     
     fprintf(fidLocs, '%0.6f, %0.6f, %0.6f,', ptReconstruct );

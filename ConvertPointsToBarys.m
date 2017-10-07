@@ -37,6 +37,13 @@ end
 %%Points on hand
 save( strcat( dir, 'handrep', name, '.mat'), 'handrep' );
 
+foo = load( strcat( dir, 'handrep', name, '.mat') );
+hrCheck = foo.handrep;
+for k = 1:size(hrCheck.vIds, 1 )
+    pt = Reconstruct(m, hrCheck.vIds(k,:), hrCheck.vBarys(k,:) );
+    plot3( pt(1), pt(2), pt(3), 'Og', 'MarkerSize', 20 );
+end
+
 fid = fopen( strcat(dir, name, '_vs.txt'), 'w');
 for k = 1:size(m.vertices,1)
     fprintf(fid, '%0.6f %0.6f %0.6f ', m.vertices(k,:));
