@@ -30,6 +30,8 @@ function [  ] = RenderSTL( stlMesh, figureNumber, bOverlay, color )
     axis('image');
     view([-135 35]);
    
-
+    xlabel('x');
+    ylabel('y');
+    zlabel('z');
 end
 

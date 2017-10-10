@@ -4,7 +4,9 @@ function [ metricsTrajectory ] = ProcessTrajectory( strDirName, nFiles, handrep,
 
 metricsTrajectory = zeros( nFiles, 4 );
 clf
-objPoints = dlmread( strcat(strDirName, 'ObjectPts.off') );
+objPointsAndNormals = dlmread( strcat(strDirName, 'Object_PtsNorms.txt') );
+objPoints = objPointsAndNormals(:,1:3);
+objNorms = objPointsAndNormals(:,4:6);
 
 matObjAlign = eye(3,3);
 matObjAlign( 2,2 ) = cos( pi/2 );
@@ -13,6 +15,7 @@ matObjAlign( 2,3 ) = -sin( pi/2 );
 matObjAlign( 3,2 ) = sin( pi/2 );
 
 objPoints = matObjAlign * objPoints';
+objNorms = matObjAlign * objNorms';
 
 matObjAlign = eye(3,3);
 dAng = -38;
@@ -22,8 +25,10 @@ matObjAlign( 1,2 ) = -sind( dAng );
 matObjAlign( 2,1 ) = sind( dAng );
 
 objPoints = matObjAlign * objPoints;
+objNorms = matObjAlign * objNorms;
 
 objPoints = objPoints';
+objNorms = objNorms';
 
 ptCenter = [-0.7732    0.10392    1.1984];
 
@@ -39,8 +44,9 @@ for k = 1:nFiles
     ylabel('y');
     zlabel('z');
     hold on;
-    plot3( objPoints(:,1), objPoints(:,2), objPoints(:,3), '.k');
-    metrics = CalcAllMetrics( handSTL, handrep, handWidth, objPoints, height );
+    quiver3( objPoints(:,1), objPoints(:,2), objPoints(:,3), ...
+             objNorms(:,1), objNorms(:,2), objNorms(:,3), '.k');
+    metrics = CalcAllMetrics( handSTL, handrep, handWidth, objPoints, objNorms, height );
     
     metricsTrajectory(k,:) = metrics;
 end

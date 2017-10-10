@@ -4,7 +4,6 @@ function [m, idsOut, barysOut, normsOut] = PointsToBary( fnameMesh, fnamePoints,
 %   Vertex 1 vertex 2 vertex 3  bary 1 bary 2 bary 3
 % for each point
 
-
 if strcmp( upper( fnameMesh(end-3:end) ), '.STL' ) 
     mClick = stlread( fnameMesh );
 elseif strcmp( upper( fnameMesh(end-3:end) ), '.PLY' ) 
@@ -61,9 +60,6 @@ for k = 1:size(pts,1)
     fprintf(fidIds, '%0.0f, %0.0f, %0.0f, %0.6f, %0.6f, %0.6f\n', m.faces(iBest,:), barys );
     
     ptReconstruct = Reconstruct( m, m.faces(iBest,:), barys );
-                    %m.vertices( m.faces(iBest,1),:) .* barys(1) + ...
-                    %m.vertices( m.faces(iBest,2),:) .* barys(2) + ...
-                    %m.vertices( m.faces(iBest,3),:) .* barys(3);
     plot3( ptReconstruct(1), ptReconstruct(2), ptReconstruct(3), 'Og', 'MarkerSize', 20);
     fprintf('Pt - ptReconstruct %0.6f %0.6f %0.6f\n', pts(k,1:3) - ptReconstruct );
     
