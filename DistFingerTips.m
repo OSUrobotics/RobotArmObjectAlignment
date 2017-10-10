@@ -6,8 +6,8 @@ function [ metrics ] = DistFingerTips( stlHand, handrep, handWidth, objPoints, o
 
 metrics = struct;
 metrics.dists = zeros(1,8);
-metrics.strDists = {'Min dist thumb', 'Min dist fingers', 'Contact thumb', 'Contact fingers', ...
-                    'Thumb ang', 'Thumb ang sd', 'Finger ang', 'Finger ang sd'};
+metrics.strLabels = {'Min dist thumb', 'Min dist fingers', 'Contact thumb', 'Contact fingers', ...
+                     'Thumb ang', 'Thumb ang sd', 'Finger ang', 'Finger ang sd'};
 
 RenderSTL( stlHand, 1, false, [0.5 0.5 0.5] );
 hold on;
@@ -34,15 +34,15 @@ else
     dMid = 0.5 * (dMax + dMin);
     dAngLeftPt = atan2( objPointsOriented(:,3), objPointsOriented(:,1) - handWidth/12 );
     dAngRightPt = atan2( objPointsOriented(:,3), objPointsOriented(:,1) + handWidth/12 );
-    idsOnLeft = dAngLeftPt <= pi/2 & dAngLeftPt >= pi/2 - pi/8 & objPointsOriented(:,3) < dMid;
-    idsOnRight = dAngRightPt >= pi/2 & dAngRightPt <= pi/2 + pi/8 & objPointsOriented(:,3) < dMid;
+    idsOnLeft = dAngLeftPt <= pi/2 & dAngLeftPt >= pi/2 - pi/16 & objPointsOriented(:,3) < dMid;
+    idsOnRight = dAngRightPt >= pi/2 & dAngRightPt <= pi/2 + pi/16 & objPointsOriented(:,3) < dMid;
     idsInPinch = idsInPinch | idsOnLeft | idsOnRight;
 
     % Shift to finger and point other way
     dAngLeftPt = atan2( -(objPointsOriented(:,3) - dFinger), objPointsOriented(:,1) - handWidth/12 );
     dAngRightPt = atan2( -(objPointsOriented(:,3) - dFinger), objPointsOriented(:,1) + handWidth/12 );
-    idsOnLeft = dAngLeftPt <= pi/2 & dAngLeftPt >= pi/2 - pi/8 & objPointsOriented(:,3) < dMid;
-    idsOnRight = dAngRightPt >= pi/2 & dAngRightPt <= pi/2 + pi/8 & objPointsOriented(:,3) < dMid;
+    idsOnLeft = dAngLeftPt <= pi/2 & dAngLeftPt >= pi/2 - pi/16 & -(objPointsOriented(:,3) - dFinger) < dMid;
+    idsOnRight = dAngRightPt >= pi/2 & dAngRightPt <= pi/2 + pi/16 & -(objPointsOriented(:,3) - dFinger) < dMid;
     idsInPinch = idsInPinch | idsOnLeft | idsOnRight;
 
     idsForNormThumb = idsInPlane & idsInPinch & objPointsOriented(:,3) <= dMin + height & objPointsOriented(:,6) < 0;

@@ -46,9 +46,16 @@ for k = 1:nFiles
     hold on;
     quiver3( objPoints(:,1), objPoints(:,2), objPoints(:,3), ...
              objNorms(:,1), objNorms(:,2), objNorms(:,3), '.k');
-    metrics = CalcAllMetrics( handSTL, handrep, handWidth, objPoints, objNorms, height );
+    [ metrics, metricsPalm, metricsFinger, metricsPinch ] = ...
+        CalcAllMetrics( handSTL, handrep, handWidth, objPoints, objNorms, height );
     
-    metricsTrajectory(k,:) = metrics;
+    save( strcat( strDirName, 'metrics', num2str(k-1), '.mat' ), ...
+          'metricsPalm', 'metricsFinger', 'metricsPinch' );
+      
+    if k == 1
+        metricsTrajectory = zeros( nFiles, length(metrics.dists) );
+    end
+    metricsTrajectory(k,:) = metrics.dists;
 end
 
 end
