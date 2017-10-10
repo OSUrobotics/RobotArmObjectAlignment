@@ -7,8 +7,8 @@ function [ metrics ] = DistFingerTips( stlHand, handrep, handWidth, objPoints, o
 global bDraw;
 
 metrics = struct;
-metrics.dists = zeros(1,8);
-metrics.strLabels = {'Min dist thumb', 'Min dist fingers', 'Contact thumb', 'Contact fingers', ...
+metrics.dists = zeros(1,6) + 1000;
+metrics.strLabels = {'Min dist thumb', 'Min dist fingers', ...
                      'Thumb ang', 'Thumb ang sd', 'Finger ang', 'Finger ang sd'};
 
 if bDraw == true
@@ -29,7 +29,7 @@ end
 idsInPinch = abs( objPointsOriented(:, 1) ) < (handWidth/6);
 
 if sum( idsInPlane & idsInPinch ) == 0 
-    metrics.dists = 1000;
+    fprintf('DistFingerTips no ids\n');
 else
     % Do distances in z (palm normal)
     dMin = min( objPointsOriented(idsInPinch & idsInPlane, 3) );
