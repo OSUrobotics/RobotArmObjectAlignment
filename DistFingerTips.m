@@ -4,13 +4,18 @@ function [ metrics ] = DistFingerTips( stlHand, handrep, handWidth, objPoints, o
 %   Measure closest and farthest points
 %   Measure contact region normals at those points
 
+global bDraw;
+
 metrics = struct;
 metrics.dists = zeros(1,8);
 metrics.strLabels = {'Min dist thumb', 'Min dist fingers', 'Contact thumb', 'Contact fingers', ...
                      'Thumb ang', 'Thumb ang sd', 'Finger ang', 'Finger ang sd'};
 
-RenderSTL( stlHand, 1, false, [0.5 0.5 0.5] );
-hold on;
+if bDraw == true
+    RenderSTL( stlHand, 1, false, [0.5 0.5 0.5] );
+    hold on;
+end
+
 % orient 
 %   Vec X is parallel to palm
 %   Vec Y is up out of the grasp
@@ -67,13 +72,15 @@ else
         metrics.dists(6) = 10;
     end
     
-    pts = [ptCenter + vecZ * dMin; ptCenter + vecZ * dMax];
-    objPts = objPoints( idsInPlane & idsInPinch, : );
-    plot3( objPts(:, 1), objPts(:, 2), objPts(:, 3), 'Oy', 'MarkerSize', 15);
-    plot3( pts(:,1), pts(:,2), pts(:,3), '*-k', 'MarkerSize', 20);
-    pts = objPoints( idsForNormThumb | idsForNormFingers, : );
-    quiver3( pts(:, 1), pts(:, 2), pts(:, 3), ...
-             norms(:, 1), norms(:, 2), norms(:, 3) );
+    if bDraw == true
+        pts = [ptCenter + vecZ * dMin; ptCenter + vecZ * dMax];
+        objPts = objPoints( idsInPlane & idsInPinch, : );
+        plot3( objPts(:, 1), objPts(:, 2), objPts(:, 3), 'Oy', 'MarkerSize', 15);
+        plot3( pts(:,1), pts(:,2), pts(:,3), '*-k', 'MarkerSize', 20);
+        pts = objPoints( idsForNormThumb | idsForNormFingers, : );
+        quiver3( pts(:, 1), pts(:, 2), pts(:, 3), ...
+                 norms(:, 1), norms(:, 2), norms(:, 3) );
+    end
 end
 
 end

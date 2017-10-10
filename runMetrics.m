@@ -2,6 +2,9 @@ clear;
 clc
 clf
 
+global bDraw;
+bDraw = false;
+
 name = 'handAndArm';
 %name = 'handOnly';
 

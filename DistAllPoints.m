@@ -6,6 +6,8 @@ function [ metrics ] = DistAllPoints( stlHand, handrep, objPoints, objNorms, hei
 %   Find closest, mean, widest (in z) and furthest points
 %     Measured out of the palm
 
+global bDraw;
+
 metrics = struct;
 metrics.dists = zeros(size( handrep.vIds, 1 ) - 3, 3);
 metrics.strLabels = {'Min dist', 'Orientation avg', 'Orientation sd'};
@@ -20,18 +22,21 @@ vecYOut = ptRight - ptLeft;
 
 metrics.sliceWidth = sqrt( sum( (ptRight - ptLeft).^2) );
 
-RenderSTL( stlHand, 1, false, [0.5 0.5 0.5] );
-hold on;
-pts = zeros( size( handrep.vIds,1 ), 3 );
-norms = pts;
-for k = 1:size( handrep.vIds, 1 )
-    [ptCenter, ptNorm] = Reconstruct( stlHand, handrep.vIds(k,:), handrep.vBarys(k,:) );
-    pts(k,:) = ptCenter;
-    norms(k,:) = ptNorm;
+if bDraw == true
+    RenderSTL( stlHand, 1, false, [0.5 0.5 0.5] );
+    hold on;
+
+    pts = zeros( size( handrep.vIds,1 ), 3 );
+    norms = pts;
+    for k = 1:size( handrep.vIds, 1 )
+        [ptCenter, ptNorm] = Reconstruct( stlHand, handrep.vIds(k,:), handrep.vBarys(k,:) );
+        pts(k,:) = ptCenter;
+        norms(k,:) = ptNorm;
+    end
+    quiver3( pts(:,1), pts(:,2), pts(:,3), norms(:,1), norms(:,2), norms(:,3) );
+    pts = [ ptLeft ptRight ];
+    plot3( pts(:,1), pts(:,2),pts(:,3), '-r');
 end
-quiver3( pts(:,1), pts(:,2), pts(:,3), norms(:,1), norms(:,2), norms(:,3) );
-pts = [ ptLeft ptRight ];
-plot3( pts(:,1), pts(:,2),pts(:,3), '-r');
 
 for k = 4:size( handrep.vIds, 1 )
     [ptCenter, ptNorm] = Reconstruct( stlHand, handrep.vIds(k,:), handrep.vBarys(k,:) );

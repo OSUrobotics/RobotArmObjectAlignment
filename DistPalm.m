@@ -5,6 +5,8 @@ function [ metrics ] = DistPalm( stlHand, handrep, handWidth, objPoints, objNorm
 %   Find closest, mean, widest (in z) and furthest points
 %     Measured out of the palm
 
+global bDraw;
+
 metrics = struct;
 metrics.dists = zeros(1,6);
 metrics.strLabels = {'Min dist', 'Center dist', 'Widest dist', 'Max dist', 'Contact ang mean', 'Contact ang sd'};
@@ -68,11 +70,13 @@ else
 
     pts = [ptCenter + vecZ * dMin; ptCenter + vecZ * dCenter; ptCenter + vecZ * dWidest; ptCenter + vecZ * dMax];
     objPts = objPoints( idsInPlane & idsInFrontOfPalm, : );
-    plot3( objPts(:, 1), objPts(:, 2), objPts(:, 3), 'Oy', 'MarkerSize', 15);
-    plot3( pts(:,1), pts(:,2), pts(:,3), '*-k', 'MarkerSize', 20);
-    pts = objPoints( idsForNorm, : );
-    quiver3( pts(:, 1), pts(:, 2), pts(:, 3), ...
-             norms(:, 1), norms(:, 2), norms(:, 3) );
+    if bDraw == true
+        plot3( objPts(:, 1), objPts(:, 2), objPts(:, 3), 'Oy', 'MarkerSize', 15);
+        plot3( pts(:,1), pts(:,2), pts(:,3), '*-k', 'MarkerSize', 20);
+        pts = objPoints( idsForNorm, : );
+        quiver3( pts(:, 1), pts(:, 2), pts(:, 3), ...
+                 norms(:, 1), norms(:, 2), norms(:, 3) );
+    end
 end
 
 metrics.dists(1) = dMin;

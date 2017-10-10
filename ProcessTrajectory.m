@@ -2,8 +2,13 @@ function [ metricsTrajectory ] = ProcessTrajectory( strDirName, nFiles, handrep,
 %ProcessTrajectory Summary of this function goes here
 %   Detailed explanation goes here
 
+global bDraw;
 metricsTrajectory = zeros( nFiles, 4 );
-clf
+
+if bDraw == true
+    clf
+end
+
 objPointsAndNormals = dlmread( strcat(strDirName, 'Object_PtsNorms.txt') );
 objPoints = objPointsAndNormals(:,1:3);
 objNorms = objPointsAndNormals(:,4:6);
@@ -39,13 +44,14 @@ end
 for k = 1:nFiles
     handSTL = stlread( strcat( strDirName, 'frame', num2str(k-1), '.stl' ) );
 
-    RenderSTL( handSTL, 1, false, [0.5 0.5 0.5] );
-    xlabel('x');
-    ylabel('y');
-    zlabel('z');
-    hold on;
-    quiver3( objPoints(:,1), objPoints(:,2), objPoints(:,3), ...
-             objNorms(:,1), objNorms(:,2), objNorms(:,3), '.k');
+    if bDraw == true
+
+        RenderSTL( handSTL, 1, false, [0.5 0.5 0.5] );
+        hold on;
+        quiver3( objPoints(:,1), objPoints(:,2), objPoints(:,3), ...
+                 objNorms(:,1), objNorms(:,2), objNorms(:,3), '.k');
+    end
+    
     [ metrics, metricsPalm, metricsFinger, metricsPinch ] = ...
         CalcAllMetrics( handSTL, handrep, handWidth, objPoints, objNorms, height );
     

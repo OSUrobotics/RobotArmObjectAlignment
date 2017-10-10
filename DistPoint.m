@@ -5,11 +5,15 @@ function [ dists ] = DistPoint( ptCenter, vecX, vecY, vecZ, objPointsAndNorms, h
 %   Find min (in z) and dot product of normal with object points
 %     Measured out of point on finger/thumb
 
+global bDraw;
+
 dists = zeros(1,3);
 
-clf
-plot3( objPointsAndNorms(:,1), objPointsAndNorms(:,2), objPointsAndNorms(:,3), '.b');
-hold on;
+if bDraw == true
+    clf
+    plot3( objPointsAndNorms(:,1), objPointsAndNorms(:,2), objPointsAndNorms(:,3), '.b');
+    hold on;
+end
 
 % Rotate so x is x axis, etc
 % Clip to height in Y
@@ -29,14 +33,16 @@ else
     dDotAvg = objPointsOriented( idsForNorm, 6);
     dists(2:3) = [ mean( dDotAvg ), std( dDotAvg ) ];
 
-    pts = [ptCenter + vecZ * dists(1), ptCenter, ptCenter + vecX * width, ptCenter, ptCenter + vecY * height];
-    objPts = objPointsAndNorms( idsInPlane & idsInFrontOfPoints, 1:3 );
-    plot3( objPts(:, 1), objPts(:, 2), objPts(:, 3), 'Oy', 'MarkerSize', 15);
-    plot3( pts(:,1), pts(:,2), pts(:,3), '*-k', 'MarkerSize', 20);
-    pts = objPointsAndNorms( idsForNorm, 1:3 );
-    norms = objPointsOriented( idsForNorm, 4:6);
-    quiver3( pts(:, 1), pts(:, 2), pts(:, 3), ...
-             norms(:, 1), norms(:, 2), norms(:, 3) );
+    if bDraw == true
+        pts = [ptCenter + vecZ * dists(1), ptCenter, ptCenter + vecX * width, ptCenter, ptCenter + vecY * height];
+        objPts = objPointsAndNorms( idsInPlane & idsInFrontOfPoints, 1:3 );
+        plot3( objPts(:, 1), objPts(:, 2), objPts(:, 3), 'Oy', 'MarkerSize', 15);
+        plot3( pts(:,1), pts(:,2), pts(:,3), '*-k', 'MarkerSize', 20);
+        pts = objPointsAndNorms( idsForNorm, 1:3 );
+        norms = objPointsOriented( idsForNorm, 4:6);
+        quiver3( pts(:, 1), pts(:, 2), pts(:, 3), ...
+                 norms(:, 1), norms(:, 2), norms(:, 3) );
+    end
 
 end
 end

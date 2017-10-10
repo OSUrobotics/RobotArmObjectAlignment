@@ -12,6 +12,8 @@ function [idsInPlane, objPointsOriented ] = PlaneThroughHand( ptCenter, vecX, ve
 %  height: How "thick" the slice should be - usually 1/8ish of the span of
 %  the hand, or 1/4 of the palm
 
+global bDraw;
+
 % Translate the points
 objPointsCenter = objPointsAndNorms(:,1:3);
 for k = 1:3
@@ -31,12 +33,14 @@ objPointsOriented = [ objPointsOriented', objNormsOriented' ];
 % Clip
 idsInPlane = abs( objPointsOriented(:,2) ) < height;
 
-hold on;
-plot3( objPointsAndNorms(idsInPlane, 1), objPointsAndNorms(idsInPlane, 2), objPointsAndNorms(idsInPlane, 3), 'xr');
-pts = [ ptCenter - vecY * 5*height; ptCenter + vecY * 5*height ];
-plot3( pts(:,1), pts(:,2), pts(:,3), 'O-b');
-pts = [ ptCenter - vecX * 5*height; ptCenter + vecX * 5*height ];
-plot3( pts(:,1), pts(:,2), pts(:,3), 'O-g');
-pts = [ ptCenter; ptCenter + vecZ * 10*height ];
-plot3( pts(:,1), pts(:,2), pts(:,3), 'O-r');
+if bDraw == true
+    hold on;
+    plot3( objPointsAndNorms(idsInPlane, 1), objPointsAndNorms(idsInPlane, 2), objPointsAndNorms(idsInPlane, 3), 'xr');
+    pts = [ ptCenter - vecY * 5*height; ptCenter + vecY * 5*height ];
+    plot3( pts(:,1), pts(:,2), pts(:,3), 'O-b');
+    pts = [ ptCenter - vecX * 5*height; ptCenter + vecX * 5*height ];
+    plot3( pts(:,1), pts(:,2), pts(:,3), 'O-g');
+    pts = [ ptCenter; ptCenter + vecZ * 10*height ];
+    plot3( pts(:,1), pts(:,2), pts(:,3), 'O-r');
+end
 end
