@@ -26,6 +26,11 @@ ysSave3DScl = [];
 imTable = fileData.ImageTable;
 imKinect = fileData.frameInitial.imCamera{1};
 uvdKinect = fileData.frameInitial.uvdCamera{1};
+% the kinect points with big z values are errors; throw out so that you can
+% see the useful points
+bKeep = abs( uvdKinect(:,3) ) < 2;
+uvdKinect = uvdKinect(bKeep, : );
+
 [ checkerBoardPts2D, boardWidth, iIndices ] = AlignTableImage( imTable, imKinect, uvdKinect );
 
 verticesTable = fileData.VerticesTable;

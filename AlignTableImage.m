@@ -15,11 +15,6 @@ function [ checkerBoardPts2D, boardWidth, iIndices ] = AlignTableImage( imTable,
 %      iIndices - indices in the checkerBoardPts cooresponding to the 5
 %      alignment points
 
-% the kinect points with big z values are errors; throw out so that you can
-% see the useful points
-bKeep = abs( uvdKinect(:,3) ) < 2;
-uvdKinect = uvdKinect(bKeep, : );
-
 %% Set up to click points
 figure(1);
 clf;
@@ -45,7 +40,6 @@ global xsSave;
 global ysSave;
 global bDebug;
 
-bDebug = true;
 if bDebug == false || size(xsSave, 1) ~= 5
     [xs, ys] = ginput(5);
     xsSave = xs;

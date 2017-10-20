@@ -15,15 +15,6 @@ function [ mPCtoGlobal ] = AlignTable3D( verticesTable, imKinect, uvdKinect, che
 %   OUTPUT:
 %      Matrix that takes the point cloud to the table vertices
 
-bKeep = abs( uvdKinect(:,3) ) < 2;
-uvdKinect = uvdKinect(bKeep, : );
-
-
-% Now map each point in the checkerboard to a point in the point cloud
-%  These are the uvdCheckerBoardPts points
-%  Keep the error of the fit
-boardIndex = @(ix, iy) ix * (boardWidth(1)-1) + iy + 1;
-
 %% Draw the entire connect image
 figure(2)
 clf
@@ -45,7 +36,7 @@ uvdMarked = uvdCheckerBoardPts( iIndices, : );
 % Transform the clicked and all of the kinect points
 xyzKinect = Move( uvdKinect, mPCToZFlat );
 
-DrawKinectTableAligned( xyzKinect, verticesTable, 10, 0.5 );
+DrawKinectTableAligned( xyzKinect, verticesTable, 12, 0.5 );
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% fix scale
 fprintf('Click diagonal corners\n');

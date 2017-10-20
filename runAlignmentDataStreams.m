@@ -19,13 +19,18 @@ if ~isfield( fileData, 'frameInitial' )
     fileData.frameInitial = ReadFrameData( fileNames, fileData, 1, 2 );
 end
 
-for cam = 2:length( fileData.frameInitial.imCamera )
-    [fileData.frameInitial.matricsCamera, fileData.xyzCamera] = ...
+global bDebug;
+bDebug = false;
+for cam = 1:length( fileData.frameInitial.imCamera )
+    [camMatrix, xyzPts] = ...
         AlignTable( fileData.ImageTable, fileData.VerticesTable, ...
                     fileData.frameInitial.imCamera{cam}, ...
-                    fileData.frameInitial.uvdCamera{cam}, fileData );
+                    fileData.frameInitial.uvdCamera{cam} );
+    fileData.frameInitial.matricsCamera{cam} = camMatrix;
+    fileData.frameInitial.xyzCamera{cam} = xyzPts;
 end
 
+save( strcat( fileNames.dirCollected, 'fileData.mat'), 'fileData' );
 %% Show result
 figure(1);
 clf
@@ -42,8 +47,6 @@ for cam = 1:length( fileData.frameInitial.imCamera )
     % The image from the kinect camera
     subplot( nRows, nCols, cam + nCols );
     
-    DrawKinectTableAligned( fileData.xyzCamera, fileData.VerticesTable(:,1) );
-
-    xyzKinect = fileData.xyzCamera;
+    DrawKinectTableAligned( fileData.frameInitial.xyzCamera{cam}, fileData.VerticesTable, 7, 0.5 );
 end
-    
+
