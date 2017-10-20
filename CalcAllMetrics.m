@@ -1,4 +1,4 @@
-function [ metrics, metricsPalm ] = CalcAllMetrics( stlHand, handrep, handWidth, objPoints, objNorms, height  )
+function [ metrics, metricsPalm, metricsFinger, metricsPinch ] = CalcAllMetrics( stlHand, handrep, handWidth, objPoints, objNorms, height  )
 %CalcAllMetrics Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -18,8 +18,7 @@ metrics.strLabels = { metricsPalm.strLabels metricsFinger.strLabels metricsPinch
 metrics.handWidth = handWidth;
 metrics.sliceHeight = height;
 
-metrics.dists =  [ metricsPalm.dists metricsPalm.contactPalmAng metricsPinch.dists mFs' ];
-metrics.strLabels = metricsPalm.strLabels
+metrics.dists =  [ metricsPalm.dists metricsPinch.dists mFs' ];
 
 end
 
