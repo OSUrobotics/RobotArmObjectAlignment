@@ -1,16 +1,21 @@
-function [  ] = DrawTable( fileData )
+function [  ] = DrawTable( verticesTable, bFill )
 %DrawTable Idealized table
 %   Checkboard with colors
 %     flat in x,y plane at z = 0
 %     -1 to 1 in x,y is the middle four boxes (see ImageTable.png)
-
+%
+%   0,0 is middle (picked point 5)
+%   1st picked point is upper left (-x, positive y) [brown]
+%   2nd picked point is upper right (positive x and y) [cyan]
+%
+%  Grid size is set in the global variable dSquareWidth
+%     1 inch, currently
 
 nBoxesTotal = 15;
-offsetW = 0;
-offsetH = 0.5;
 
-widthBox = 0.5; 
-sclY = 1;
+global dSquareWidth;
+
+widthBox = dSquareWidth; 
 topLeft = [-8 * widthBox, -8 * widthBox];
 
 map = [0 0 0; 255 255 255; 99 94 55; 99 214 210; ...
@@ -18,11 +23,12 @@ map = [0 0 0; 255 255 255; 99 94 55; 99 214 210; ...
 colormap(map);
 
 bWhite = true;
-col = zeros(4, 3);
-for xs = 1:15
+col = 0;
+dX = dSquareWidth * 0.05;
+for xs = 1:nBoxesTotal
     x = topLeft(1) + (xs-1) * widthBox;
     y = topLeft(2);
-    for ys = 1:16        
+    for ys = 1:nBoxesTotal+1        
         if bWhite == true 
             col = 2;
         else
@@ -45,10 +51,15 @@ for xs = 1:15
         else
             sclY = 1;
         end
-        fill3( [x, x+widthBox, x+widthBox, x], ...
-               [y, y, y+widthBox*sclY, y+widthBox*sclY]*-1, ...
-               [0,0,0,0], col );
-           %, 'FaceVertexCData', col, 'FaceColor', 'flat' );
+        if bFill
+            fill3( [x, x+widthBox, x+widthBox, x], ...
+                   [y, y, y+widthBox*sclY, y+widthBox*sclY]*-1, ...
+                   [0,0,0,0], col );
+        else
+            plot3( [x+dX, x+widthBox-dX, x+widthBox-dX, x+dX, x+dX], ...
+                   [y+dX, y+dX, y+widthBox-dX, y+widthBox-dX, y+dX]*-1, ...
+                   [0,0,0,0,0], '-k', 'LineWidth', 1.5, 'Color', map(col,:) );
+        end
        hold on;
        
        y = y + widthBox*sclY;
@@ -56,9 +67,9 @@ for xs = 1:15
     bWhite = ~bWhite;
 end
 
-plot3( fileData.VerticesTable(:,1), fileData.VerticesTable(:,2), fileData.VerticesTable(:,3), 'Xr' );
-for k = 1:size( fileData.VerticesTable, 1 )
-    text( fileData.VerticesTable(k,1), fileData.VerticesTable(k,2), num2str(k), 'Color', [0 1 0], 'FontSize',36 );
+plot3( verticesTable(:,1), verticesTable(:,2), verticesTable(:,3), 'Xr' );
+for k = 1:size( verticesTable, 1 )
+    text( verticesTable(k,1), verticesTable(k,2), num2str(k), 'Color', [1 0 1], 'FontSize',18 );
 end
 
 xlabel('x'); 

@@ -1,6 +1,11 @@
 function [ M, R, T, S ] = AlignKinectOpenRave( xyzArm, uvdKinect )
-%Find the matrix (rotation + translation + scale) that best aligns the 3D
-%points from the kinect point cloud with the barrett arm
+% AlignKinectOpenRave - Align arm with point cloud
+%    INPUT
+%      xyzArm: Points on the arm/known 3D points 
+%      uvdKinect: Point cloud
+%    OUTPUT:
+%  The matrix (rotation + translation + scale) that best aligns the 3D
+%  points from the kinect point cloud with the barrett arm
 
 [~,~,transform] = procrustes( xyzArm, uvdKinect, 'reflection', false );
 
