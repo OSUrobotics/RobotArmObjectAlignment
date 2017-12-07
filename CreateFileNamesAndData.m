@@ -27,6 +27,18 @@ fileNames.dirFrames = strcat( fileNames.dirCollected, trial, '/Frames/' );
 
 fileData.ImageTable = imread( strcat(fileNames.dirGenerated, 'imageTable.png') );
 fileData.VerticesTable = dlmread( strcat(fileNames.dirGenerated, 'verticesCheckerboard.csv') );
+% Could do with a double pair of for loops, but that would be showing off.
+global dSquareWidth;
+fileData.VerticesTable(1,1) = -2 * dSquareWidth;
+fileData.VerticesTable(1,2) =  2 * dSquareWidth;
+fileData.VerticesTable(2,1) =  2 * dSquareWidth;
+fileData.VerticesTable(2,2) =  2 * dSquareWidth;
+fileData.VerticesTable(3,1) = -2 * dSquareWidth;
+fileData.VerticesTable(3,2) = -2 * dSquareWidth;
+fileData.VerticesTable(4,1) =  2 * dSquareWidth;
+fileData.VerticesTable(4,2) = -2 * dSquareWidth;
+fileData.VerticesTable(5,1) = 0;
+fileData.VerticesTable(5,2) = 0;
 
 % File names that are the same for all
 fnameRobotHandMask = 'RobotHandArm_hand.txt';
@@ -57,11 +69,12 @@ mask = dlmread( strcat(fileNames.dirMasks, fnameRobotBaseMask ) );
 mask = mask == 1;
 fileData.baseMask = mask(mapIds);
 
-frame.matricesCamera = cell(1,nCameras);
-for cam = 1:nCameras
-    frame.matricesCamera{cam} = eye(4,4);
+fileData.cameraMatrix = cell( nCameras, 1 );
+for k = 1:nCameras
+    fileData.cameraMatrix{k} = eye(4,4);
 end
 
+% Do not delete -magic code to fix masks because mesh conversion wrong
 % mapIds = zeros( size( stlVs, 1 ), 1 );
 % 
 % for k = 1:size( stlVs, 1 )

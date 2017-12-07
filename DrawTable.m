@@ -9,51 +9,46 @@ function [  ] = DrawTable( verticesTable, bFill )
 %   2nd picked point is upper right (positive x and y) [cyan]
 %
 %  Grid size is set in the global variable dSquareWidth
-%     1 inch, currently
-
-nBoxesTotal = 15;
+%     2 cm currently
 
 global dSquareWidth;
+global checkerboardSize;
 
 widthBox = dSquareWidth; 
-topLeft = [-8 * widthBox, -8 * widthBox];
+nXY = floor( checkerboardSize/2 );
 
-map = [0 0 0; 255 255 255; 99 94 55; 99 214 210; ...
-       217 151 207; 215 120 103; 192 159 253]/255;
+topLeft = [-nXY(1) * widthBox, -nXY(2) * widthBox];
+
+% Color map for scribbled in squares
+map = [0 0 0; 255 255 255; 90 215 55; 99 214 210; ...
+       217 151 207; 215 120 103]/255;
 colormap(map);
 
-bWhite = true;
+bWhite = false;
+dX = 0.1 * dSquareWidth;
 col = 0;
-dX = dSquareWidth * 0.05;
-for xs = 1:nBoxesTotal
+for xs = 1:checkerboardSize(1)
     x = topLeft(1) + (xs-1) * widthBox;
     y = topLeft(2);
-    for ys = 1:nBoxesTotal+1        
+    for ys = 1:checkerboardSize(2)        
         if bWhite == true 
             col = 2;
         else
             col = 1;
         end
         bWhite = ~bWhite;
-        if xs == 7 && ys == 7
+        if xs == nXY(1)-1 && ys == nXY(2)-1
             col = 3;
-        elseif xs == 9 && ys == 7
+        elseif xs == nXY(1)+1 && ys == nXY(2)-1
             col = 4;
-        elseif xs == 7 && ys == 9
+        elseif xs == nXY(1)-1 && ys == nXY(2)+1
             col = 5;
-        elseif xs == 10 && ys == 10
+        elseif xs == nXY(1)+2 && ys == nXY(2)+2
             col = 6;
-        elseif xs == 8 && ys == 12
-            col = 7;
-        end
-        if ys == 1 || ys == 16
-            sclY = 0.5;
-        else
-            sclY = 1;
         end
         if bFill
             fill3( [x, x+widthBox, x+widthBox, x], ...
-                   [y, y, y+widthBox*sclY, y+widthBox*sclY]*-1, ...
+                   [y, y, y+widthBox, y+widthBox]*-1, ...
                    [0,0,0,0], col );
         else
             plot3( [x+dX, x+widthBox-dX, x+widthBox-dX, x+dX, x+dX], ...
@@ -62,7 +57,7 @@ for xs = 1:nBoxesTotal
         end
        hold on;
        
-       y = y + widthBox*sclY;
+       y = y + widthBox;
     end
     bWhite = ~bWhite;
 end

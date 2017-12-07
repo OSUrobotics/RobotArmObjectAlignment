@@ -17,6 +17,9 @@ function [ matAdjustObj, stlVsAligned ] = AlignObjtoPC( objSTL, armSTL, handAndW
 %    matAdjustObj - matrix to move the object stl to the point cloud
 %    stlVsAligned - move the stl vertices
 
+global dSquareWidth;
+dPCOnObj = dSquareWidth * 0.25;
+
 %% First find the point cloud vertices that belong to the object
 
 
@@ -37,12 +40,12 @@ for cam = 1:length( xyzKinect )
 end
 
 % All point cloud that might be hand
-bHandPC = InsideBBox( xyzTrim(:,1:3), bboxHand, 1.01 );
+bBoxHandPC = InsideBBox( xyzTrim(:,1:3), bboxHand, 1.01 );
 dSizeBox = sqrt( sum( ( bboxHand(2,:) - bboxHand(1,:) ).^2 ) );
-distances = DistPointsToMesh( xyzTrim, bHandPC, armSTL, handMask, 0.1 * dSizeBox, dSizeBox );
+distances = DistPointsToMesh( xyzTrim, bBoxHandPC, armSTL, handMask, 0.1 * dSizeBox, dSizeBox );
 
 % Know table is in meters
-bHandPC = distances < 0.001;
+bHandPC = distances < dPCOnObj;
 
 %% Translate bottom to best guess of point cloud middle
 bPCObj = ~bHandPC;
@@ -74,5 +77,21 @@ RenderSTL( objSTL, 2, false, [1.0 0.5 0.5] )
 hold on;
 plot3( vsObj(1,:), vsObj(2,:), vsObj(3,:), '.g');
 pcshow( xyzTrim( bPCObj,1:3 ), xyzTrim( bPCObj,4:6 ) );
+
+%% Object
+maskObj = zeros( size( objSTL.vertices, 1 ), 1 ) == 0;
+distsObj = DistPointsToMesh( xyzTrim, bBoxHandPC, objSTL, maskObj, 0.1 * dSizeBox, dSizeBox );
+
+bIsHand = distances < distsObj & distances < dPCOnObj;
+bIsObj = distances > distsObj & distsObj < dPCOnObj;
+clf
+RenderSTL( armSTL, 2, true, [0.2 0.5 0.5] )
+hold on;
+pcshow( xyzTrim( bIsHand,1:3 ), xyzTrim( bIsHand,4:6 ) );
+plot3( objSTL.vertices(:,1), objSTL.vertices(:,2), objSTL.vertices(:,3), '-r');
+pcshow( xyzTrim( bIsObj,1:3 ), xyzTrim( bIsObj,4:6 ), 'MarkerSize', 20 );
+
+fprintf('Aligning\n');
+matAdjustSTL = AlignPointClouds( xyzTrim( bIsObj, 1:3 ), vsObj );
 
 end

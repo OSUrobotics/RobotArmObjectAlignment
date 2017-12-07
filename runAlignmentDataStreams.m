@@ -20,19 +20,21 @@ nCameras = 2;
 
 % Global variables used by the alignment
 global dSquareWidth;
-dSquareWidth = 0.0254; % 1 inch squares on the checkerboard, in Meters
+dSquareWidth = 0.02; % 1 inch squares on the checkerboard, in Meters
+global checkerboardSize;
+checkerboardSize = [24 18];
 
 % Actually do the alignment - don't use saved values
 global bDebug;
 bDebug = false;
 
 %% If the file names haven't been filled in, then fill them in
-%   Also gets masks
+%   Also gets masks and table image
 if ~exist( 'fileNames', 'var' ) || ~exist( 'fileData', 'var' )
     [ fileNames, fileData ] = CreateFileNamesAndData( dir, studyGen, studyCol, trial, nCameras );
 end
 
-%% Exists - read in
+%% FileData already exists for this data sequence - read in
 if exist( strcat( fileNames.dirCollected, 'fileData.mat'), 'file' ) && ~exist( 'fileData', 'var' )
     fileData = load( strcat( fileNames.dirCollected, 'fileData.mat'), 'fileData' );
     fileData = fileData.fileData;
