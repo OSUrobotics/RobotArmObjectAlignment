@@ -8,8 +8,10 @@ dir = '/Users/grimmc/Code/DataGrasp/';
 studyGen = 'Summer2017';
 %trial = 'Trial 5';
 studyCol = 'NRI Study';
+studyCol = 'CallibrationTest';
 trial = 'large_part0_2017-09-29-15-37-17';
 trial = 'pringles_part0_2017-10-06-11-45-40';
+trial = 'Checkerboard';
 objName = 'PringlesCan.STL';
 
 % Which frames to use to get data
@@ -61,6 +63,7 @@ if ~isfield( fileData, 'cameraParams' )
     end
     
     figure(1);
+    set(gcf, 'Position', [40 40 1000 600 ] )
     clf;
     for cam = 1:nCameras
         % Camera image

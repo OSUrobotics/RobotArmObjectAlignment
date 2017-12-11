@@ -53,27 +53,27 @@ checkerBoardPts2D = [checkerBoardPts2D(:,1) + newOrigin(1), ...
 %   boardWidth is the size of the board
 %     For indexing purposes, height is in first component, width in second
 boardIndex = @(ix, iy) ix * (boardWidth(1)-1) + iy + 1;
-xIndex = @(index) floor( (index-1) / (boardWidth(1)-1) );
-yIndex = @(index) mod( (index-1), (boardWidth(1)-1) );
+xIndex = @(index) floor( (index-1) / (boardWidth(2)-1) );
+yIndex = @(index) mod( (index-1), (boardWidth(2)-1) );
 
 
-% Now collect points
-fprintf('Click the shown Xs in order\n');
-%% Note - uncomment to collect real points, otherwise, use saved
-%    useful for debugging
-global xsSave;
-global ysSave;
-global bDebug;
-
-if bDebug == false || size(xsSave, 1) ~= 5
-    [xs, ys] = ginput(5);
-    xsSave = xs;
-    ysSave = ys;
-else
-    xs = xsSave;
-    ys = ysSave;
-end
-
+% % Now collect points
+% fprintf('Click the shown Xs in order\n');
+% %% Note - uncomment to collect real points, otherwise, use saved
+% %    useful for debugging
+% global xsSave;
+% global ysSave;
+% global bDebug;
+% 
+% if bDebug == false || size(xsSave, 1) ~= 5
+%     [xs, ys] = ginput(5);
+%     xsSave = xs;
+%     ysSave = ys;
+% else
+%     xs = xsSave;
+%     ys = ysSave;
+% end
+% 
 
 % Draw the found points/checkerboard on top of the image
 %  Mark the coordinate system: Blue is x direction, red is y
@@ -87,6 +87,45 @@ plot( [imPtMid(1) imPtMidXIncr(1)], [imPtMid(2) imPtMidXIncr(2)], '-Xb', 'Marker
 plot( [imPtMid(1) imPtMidYIncr(1)], [imPtMid(2) imPtMidYIncr(2)], '-Xr', 'MarkerSize', 15, 'LineWidth', 3 );
 % Draw all points on the checkerboard
 plot( checkerBoardPts2D(:,1), checkerBoardPts2D(:,2), 'og', 'MarkerSize', 10 );
+
+pts = zeros(4, 2);
+bIsMarked = zeros( boardWidth(2) - 2, boardWidth(1) - 2 ) == 1;
+for iX = 0:boardWidth(2)-2
+    for iY = 0:boardWidth(1)-2
+        pts(1,:) = checkerBoardPts2D( boardIndex( iX, iY ), : );
+        pts(2,:) = checkerBoardPts2D( boardIndex( iX+1, iY ), : );
+        pts(3,:) = checkerBoardPts2D( boardIndex( iX+1, iY+1 ), : );
+        pts(4,:) = checkerBoardPts2D( boardIndex( iX, iY+1 ), : );
+        ptMid = mean( pts );
+        
+        % Center of square
+        pixs = [];
+        for dS = 0.2:0.1:0.8
+            for dT = 0.2:0.1:0.8
+                pt = (1-dS) * (1-dT) * pts(1,:) + ...
+                     (dS) * (1-dT) * pts(2,:) + ...
+                     (dS) * (dT) * pts(3,:) + ...
+                     (1-dS) * (dT) * pts(4,:);
+                ipt = round( pt );
+                %plot( pt(1), pt(2), '.g')
+                pixs = [pixs; squeeze(imKinect( ipt(2), ipt(1), : ))'];
+             end
+        end
+        cols = mean( pixs );
+        if mean( cols ) < 100
+            % black
+            plot( ptMid(1), ptMid(2), '*k', 'MarkerSize', 20 );
+        elseif mean( cols ) > 200
+            diff = max( cols ) - min(cols );
+            if diff > 15
+                plot( ptMid(1), ptMid(2), '*y', 'MarkerSize', 20 );
+                bIsMarked(iX+1, iY+1) = true;
+            else
+                plot( ptMid(1), ptMid(2), '*g', 'MarkerSize', 20 );
+            end
+        end
+    end
+end
 
 % For xs, ys, find the corresponding checkerboard point
 %   Snap the xs, ys points to the checkerboard

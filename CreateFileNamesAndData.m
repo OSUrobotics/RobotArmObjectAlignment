@@ -23,7 +23,7 @@ fileNames.dirAnalyzed = strcat( dir, 'Analyzed data/', studyCol, '/' );
 fileNames.dirGenerated = strcat( dir, 'Generated study data/', studyGen, '/' );
 fileNames.dirMasks = strcat(fileNames.dirGenerated, 'Masks/');
 fileNames.dirObjectSTLS = strcat( fileNames.dirGenerated, 'ObjectSTLs/');
-fileNames.dirFrames = strcat( fileNames.dirCollected, trial, '/Frames/' );
+fileNames.dirFrames = strcat( fileNames.dirCollected, trial, '/' );
 
 fileData.ImageTable = imread( strcat(fileNames.dirGenerated, 'imageTable.png') );
 fileData.VerticesTable = dlmread( strcat(fileNames.dirGenerated, 'verticesCheckerboard.csv') );
