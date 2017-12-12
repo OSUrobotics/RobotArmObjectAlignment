@@ -52,7 +52,7 @@ checkerBoardPts2D = [checkerBoardPts2D(:,1) + newOrigin(1), ...
                  
 %   boardWidth is the size of the board
 %     For indexing purposes, height is in first component, width in second
-boardIndex = @(ix, iy) ix * (boardWidth(1)-1) + iy + 1;
+boardIndex = @(ix, iy) iy * (boardWidth(1)-1) + ix + 1;
 xIndex = @(index) floor( (index-1) / (boardWidth(2)-1) );
 yIndex = @(index) mod( (index-1), (boardWidth(2)-1) );
 
@@ -78,8 +78,8 @@ yIndex = @(index) mod( (index-1), (boardWidth(2)-1) );
 % Draw the found points/checkerboard on top of the image
 %  Mark the coordinate system: Blue is x direction, red is y
 hold on;
-xMid = floor( (boardWidth(2)-1) / 2 ); % Center of checkerboard
-yMid = floor( (boardWidth(1)-1) / 2 );
+xMid = floor( (boardWidth(1)-1) / 2 ); % Center of checkerboard
+yMid = floor( (boardWidth(2)-1) / 2 );
 imPtMid = checkerBoardPts2D( boardIndex( xMid, yMid ),: );
 imPtMidXIncr = checkerBoardPts2D( boardIndex( xMid+1, yMid ), : ); % One in x
 imPtMidYIncr = checkerBoardPts2D( boardIndex( xMid, yMid+1 ), : ); % One in y
@@ -89,14 +89,21 @@ plot( [imPtMid(1) imPtMidYIncr(1)], [imPtMid(2) imPtMidYIncr(2)], '-Xr', 'Marker
 plot( checkerBoardPts2D(:,1), checkerBoardPts2D(:,2), 'og', 'MarkerSize', 10 );
 
 pts = zeros(4, 2);
-bIsMarked = zeros( boardWidth(2) - 2, boardWidth(1) - 2 ) == 1;
-for iX = 0:boardWidth(2)-2
-    for iY = 0:boardWidth(1)-2
+% 0 - black
+% 1 - white
+% 2 - marked
+bIsMarked = zeros( boardWidth(1) - 3, boardWidth(2) - 3 );
+centerX = zeros( boardWidth(1) - 3, boardWidth(2) - 3 );
+centerY = zeros( boardWidth(1) - 3, boardWidth(2) - 3 );
+for iX = 0:boardWidth(1)-3
+    for iY = 0:boardWidth(2)-3
         pts(1,:) = checkerBoardPts2D( boardIndex( iX, iY ), : );
         pts(2,:) = checkerBoardPts2D( boardIndex( iX+1, iY ), : );
         pts(3,:) = checkerBoardPts2D( boardIndex( iX+1, iY+1 ), : );
         pts(4,:) = checkerBoardPts2D( boardIndex( iX, iY+1 ), : );
         ptMid = mean( pts );
+        centerX( iX+1, iY+1) = ptMid(1);
+        centerY( iX+1, iY+1) = ptMid(2);
         
         % Center of square
         pixs = [];
@@ -115,58 +122,110 @@ for iX = 0:boardWidth(2)-2
         if mean( cols ) < 100
             % black
             plot( ptMid(1), ptMid(2), '*k', 'MarkerSize', 20 );
+            bIsMarked(iX+1, iY+1) = 0;
         elseif mean( cols ) > 200
             diff = max( cols ) - min(cols );
             if diff > 15
                 plot( ptMid(1), ptMid(2), '*y', 'MarkerSize', 20 );
-                bIsMarked(iX+1, iY+1) = true;
+                bIsMarked(iX+1, iY+1) = 2;
             else
                 plot( ptMid(1), ptMid(2), '*g', 'MarkerSize', 20 );
+                bIsMarked(iX+1, iY+1) = 1;
             end
         end
     end
 end
 
-% For xs, ys, find the corresponding checkerboard point
-%   Snap the xs, ys points to the checkerboard
-%   Keep index of found point in checkerboard array
-bFound = zeros( length(xs), 1 ) == 1;
-iIndices = ones( length(xs), 1 );
-dLenSq1 = sqrt( sum( (imPtMidXIncr - imPtMid).^2) );
-dLenSq2 = sqrt( sum( (imPtMidYIncr - imPtMid).^2) );
-dWidthSq = 0.5 * ( dLenSq1 + dLenSq2 );
-for k = 1:length(xs)
-    dDist = sqrt( (checkerBoardPts2D(:,1) - xs(k)).^2 + (checkerBoardPts2D(:,2) - ys(k)).^2 );
-    [dDistClosest, iIndex] = min( dDist );
-    if dDistClosest < dWidthSq
-        % Save x and y index, and snap the xs, ys to the found points
-        bFound(k) = true;
-        xs(k) = checkerBoardPts2D(iIndex, 1);
-        ys(k) = checkerBoardPts2D(iIndex, 2);
-        iIndices(k) = iIndex;
-        fprintf('Keep %0.0f dist %0.6f, index %0.0f\n', k, dDistClosest, iIndex);
+% % For xs, ys, find the corresponding checkerboard point
+% %   Snap the xs, ys points to the checkerboard
+% %   Keep index of found point in checkerboard array
+% bFound = zeros( length(xs), 1 ) == 1;
+% iIndices = ones( length(xs), 1 );
+% dLenSq1 = sqrt( sum( (imPtMidXIncr - imPtMid).^2) );
+% dLenSq2 = sqrt( sum( (imPtMidYIncr - imPtMid).^2) );
+% dWidthSq = 0.5 * ( dLenSq1 + dLenSq2 );
+% for k = 1:length(xs)
+%     dDist = sqrt( (checkerBoardPts2D(:,1) - xs(k)).^2 + (checkerBoardPts2D(:,2) - ys(k)).^2 );
+%     [dDistClosest, iIndex] = min( dDist );
+%     if dDistClosest < dWidthSq
+%         % Save x and y index, and snap the xs, ys to the found points
+%         bFound(k) = true;
+%         xs(k) = checkerBoardPts2D(iIndex, 1);
+%         ys(k) = checkerBoardPts2D(iIndex, 2);
+%         iIndices(k) = iIndex;
+%         fprintf('Keep %0.0f dist %0.6f, index %0.0f\n', k, dDistClosest, iIndex);
+%     end
+% end
+% 
+% % Plot matched points
+% plot( xs, ys, '*g', 'MarkerSize', 20 );
+% plot( xsSave, ysSave, '*b', 'MarkerSize', 15 );
+
+%Figure out which are our 5 indices
+iIndices = ones( 5, 1 );
+xIndices = ones( 5, 1 );
+yIndices = ones( 5, 1 );
+offsetsColoredSq = [ -1.5 0.5 -1.5 1.5; -1.5 -1.5 0.5 1.5 ];
+offsetsVerts = [-2 2 -2 2 0; 2 2 -2 -2 0 ];
+matRot = eye(2);
+% try four different orientations
+bFound = false;
+dTheta = 0;
+% This is the center, regardless of the rotation
+iCX = floor( (boardWidth(1)-1) / 2 );
+iCY = floor( (boardWidth(2)-1) / 2 );
+while bFound == false && dTheta < 360
+
+    matRot(1,1) = cosd( dTheta );
+    matRot(2,2) = cosd( dTheta );
+    matRot(1,2) = sind( dTheta );
+    matRot(2,1) = -sind( dTheta );
+    
+    rotOffsets = matRot * offsetsColoredSq;
+    ptMarked = floor( [ iCX + rotOffsets(1,:); iCY + rotOffsets(2,:) ] );    
+        
+    iMarked = 0;
+    pt2D = zeros( 4, 2 );
+    for k = 1:4
+        pt2D(k,1) = centerX( ptMarked(1,k)+1, ptMarked(2,k)+1 );
+        pt2D(k,2) = centerY( ptMarked(1,k)+1, ptMarked(2,k)+1 );
+        if bIsMarked( ptMarked(1,k)+1, ptMarked(2,k)+1 ) == 2
+            iMarked = iMarked + 1;
+        end
+        plot( pt2D(k,1), pt2D(k,2), '*g');
+        fprintf( '%0.0f ', bIsMarked( ptMarked(1,k)+1, ptMarked(2,k)+1 ) );
     end
+    fprintf('\n');
+
+    if (iMarked > 2 )
+        bFound = true;
+        plot( pt2D(:,1), pt2D(:,2), '*r');
+        rotOffsetVs = matRot * offsetsVerts;
+        xIndices = iCX + rotOffsetVs(1,:);
+        yIndices = iCY + rotOffsetVs(2,:);
+    else
+        dTheta = dTheta + 90;
+    end    
 end
 
-% Plot matched points
-plot( xs, ys, '*g', 'MarkerSize', 20 );
-plot( xsSave, ysSave, '*b', 'MarkerSize', 15 );
+% set indices and 3D checkerboard
+iIndices = boardIndex( xIndices, yIndices );
 
 %% Now re-order appropriately
-xIndices = xIndex( iIndices );
-yIndices = yIndex( iIndices );
-
-% indices are a translate then a rotate/swap then a translate
-matRot = eye(2);
-matRot(1,1) = floor( (xIndices( 2 ) - xIndices(1)) / 4 );
-matRot(1,2) = floor( (yIndices( 2 ) - yIndices(1)) / 4 );
-matRot(2,1) = floor( (xIndices( 1 ) - xIndices(3)) / 4 );
-matRot(2,2) = floor( (yIndices( 1 ) - yIndices(3)) / 4 );
+% xIndices = xIndex( iIndices );
+% yIndices = yIndex( iIndices );
+% 
+% % indices are a translate then a rotate/swap then a translate
+% matRot = eye(2);
+% matRot(1,1) = floor( (xIndices( 2 ) - xIndices(1)) / 4 );
+% matRot(1,2) = floor( (yIndices( 2 ) - yIndices(1)) / 4 );
+% matRot(2,1) = floor( (xIndices( 1 ) - xIndices(3)) / 4 );
+% matRot(2,2) = floor( (yIndices( 1 ) - yIndices(3)) / 4 );
 
 checkerBoardPts3D = zeros( size( checkerBoardPts2D, 1 ), 3 );
 global dSquareWidth;
-for iX = 0:boardWidth(2)-2
-    for iY = 0:boardWidth(1)-2
+for iX = 0:boardWidth(1)-2
+    for iY = 0:boardWidth(2)-2
         iNew = matRot * [iX - xIndices(5); iY - yIndices(5)];
         iIndexBd = boardIndex(iX, iY);
         checkerBoardPts3D( iIndexBd, 1) = iNew(1) * dSquareWidth;
